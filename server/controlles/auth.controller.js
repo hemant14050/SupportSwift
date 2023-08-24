@@ -62,7 +62,7 @@ exports.register = async(req, res) => {
 
         // send mail
         try {
-
+            
 
         } catch(err) {
             console.log("Error: ", err);
