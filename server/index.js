@@ -2,6 +2,13 @@ const express = require("express");
 const app = express();
 require("dotenv").config();
 const {connectDb} = require("./config/database");
+const cookieParser = require('cookie-parser');
+const authRoutes = require("./routes/auth.routes");
+
+app.use(cookieParser());
+app.use(express.json());
+
+app.use("/api/v1/auth", authRoutes);
 
 connectDb();
 
@@ -10,5 +17,5 @@ app.get("/", (req, res) => {
 });
 
 app.listen(process.env.PORT, () => {
-    console.log(`🚀Server is Runnig at PORT: ${process.env.PORT}`);
+    console.log(`🚀Server is Running at PORT: ${process.env.PORT}`);
 });
