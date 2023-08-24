@@ -28,7 +28,7 @@ const ticketSchema = new mongoose.Schema({
     },
     assignedTo: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        ref: "Department"
     },
     closedAt: {
         type: Date,

@@ -24,14 +24,15 @@ const userSchema = new mongoose.Schema({
         enum: ["User", "Admin"],
         required: true,
     },
+    department: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Department",
+        required: true,
+    },
     ticketsRaised: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Ticket",
     }],
-    ticketsAssigned: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Ticket"
-    }]
 }, {timestamps: true});
 
 const User = mongoose.model("User", userSchema);
