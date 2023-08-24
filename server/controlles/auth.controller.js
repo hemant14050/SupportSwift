@@ -3,6 +3,7 @@ const Department = require("../models/Department");
 const generatePassword = require("generate-password");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const {sendMail} = require("../utils/mailer");
 
 /**
  * 200 - Success
@@ -45,7 +46,7 @@ exports.register = async(req, res) => {
             length: 10,
             numbers: true,
         });
-        console.log("Neww Pass: ", defaultPassword);
+        // console.log("Neww Pass: ", defaultPassword);
 
         // hash password
         const salt = await bcrypt.genSalt(10);
@@ -62,8 +63,14 @@ exports.register = async(req, res) => {
 
         // send mail
         try {
-            
+            // console.log("Email printing: ", email);
+            const mailResponse = await sendMail(email, {password: defaultPassword});
 
+            return res.status(200).json({
+                success: true,
+                message: "User created successfully and email sent to user"
+            });
+            
         } catch(err) {
             console.log("Error: ", err);
             return res.status(200).json({
@@ -71,11 +78,6 @@ exports.register = async(req, res) => {
                 message: "User created successfully, but email not sent user"
             });
         }
-
-        return res.status(200).json({
-            success: true,
-            message: "User created successfully and email sent to user"
-        });
 
     } catch(err) {
         console.log("Error:", err);
@@ -120,7 +122,7 @@ exports.login = async(req, res) => {
             currUser.password = undefined;
 
             // make token
-            const token = jwt.sign(payload, process.env.JWT_SECRET, {expiresIn: "24h"});
+            const token = jwt.sign({user:payload}, process.env.JWT_SECRET, {expiresIn: "24h"});
 
             // options for cookie
             const options = {
