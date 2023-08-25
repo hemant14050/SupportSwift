@@ -3,8 +3,13 @@ const router = express.Router();
 const {addDepartment, getAllDepartments, deleteDepartment} = require("../controlles/department.controller");
 const { isLoggedIn, isAdmin } = require("../middlewares/auth");
 
-router.post("/department", isLoggedIn, isAdmin, addDepartment);
-router.get("/department", isLoggedIn, isAdmin, getAllDepartments); 
-router.delete("/department/:id", isLoggedIn, deleteDepartment);
+/**
+ * ***************************************************
+ * PROTECTED ROUTES FOR ADMIN
+ * ***************************************************
+ */
+router.post("/addDepartment", isLoggedIn, isAdmin, addDepartment);
+router.get("/getAllDepartments", isLoggedIn, isAdmin, getAllDepartments); 
+router.delete("/deleteDepartment/:id", isLoggedIn, isAdmin, deleteDepartment);
 
 module.exports = router;
