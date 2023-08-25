@@ -154,6 +154,8 @@ exports.updateTicket = async(req, res) => {
 exports.deleteTicket = async(req, res) => {
     try {
         const {id} = req.params;
+        const user = req.user;
+
         if(!id) {
             return res.status(400).json({
                 success: false,
@@ -168,6 +170,24 @@ exports.deleteTicket = async(req, res) => {
                 message: `Ticket with id ${id} not found!`
             });
         }
+
+        // console.log("Delete: ", deletedTicket.assignedTo);
+
+        // pull it from users and department
+        const updatedUser = await User.findByIdAndUpdate({_id: user.id}, 
+            {
+                "$pull": {
+                    ticketsRaised: deletedTicket._id,
+                }
+            });
+
+        const updatedDepartment = await Department.findByIdAndUpdate({_id: deletedTicket.assignedTo._id}, 
+            {
+                "$pull": {
+                    ticketsAssigned: deletedTicket._id,
+                }
+            });
+
         return res.status(200).json({
             success: true,
             ticket: deletedTicket,
