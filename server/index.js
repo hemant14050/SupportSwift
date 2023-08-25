@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const authRoutes = require("./routes/auth.routes");
 const departmentRoutes = require("./routes/department.routes");
 const ticketRoutes = require("./routes/ticket.routes");
+const chatRoutes  = require("./routes/chat.routes");
 
 app.use(cookieParser());
 app.use(express.json());
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/department", departmentRoutes);
 app.use("/api/v1/ticket", ticketRoutes);
+app.use("/api/v1/ticket", chatRoutes);
 
 connectDb();
 
