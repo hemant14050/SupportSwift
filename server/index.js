@@ -5,12 +5,14 @@ const {connectDb} = require("./config/database");
 const cookieParser = require('cookie-parser');
 const authRoutes = require("./routes/auth.routes");
 const departmentRoutes = require("./routes/department.routes");
+const ticketRoutes = require("./routes/ticket.routes");
 
 app.use(cookieParser());
 app.use(express.json());
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1", departmentRoutes);
+app.use("/api/v1/ticket", ticketRoutes);
 
 connectDb();
 
