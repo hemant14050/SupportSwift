@@ -225,3 +225,35 @@ exports.getMyTickets = async(req, res) => {
         });
     }
 }
+
+exports.getMyDepartmentTickets = async(req, res) => {
+    try {
+        const user = req.user;
+        // console.log(user);
+
+        const currUser = await User.findById({_id: user.id});
+        const myDeptInfo = await Department.findById({_id: currUser.department})
+        .populate({
+            path: "ticketsAssigned",
+            populate: {
+                path: "createdBy",
+                // select: "-password"
+                select: "firstName lastName email department role"
+            }
+        })
+        .exec();
+
+        return res.status(200).json({
+            success: true,
+            myDeptInfo,
+            message: "myDeptInfo get successfully!"
+        });
+
+    } catch(err) {
+        console.log("Error: ", err);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server error"
+        });
+    }
+}
