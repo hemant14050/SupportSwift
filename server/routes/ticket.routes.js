@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {createTicket, getTicket, updateTicket, deleteTicket, getMyTickets, getMyDepartmentTickets} = require("../controlles/ticket.controller");
+const {createTicket, getTicket, updateTicket, deleteTicket, getMyTickets, getMyDepartmentTickets} = require("../controllers/ticket.controller");
 const { isLoggedIn } = require("../middlewares/auth");
 
 router.post("/createTicket", isLoggedIn, createTicket);
