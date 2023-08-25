@@ -153,3 +153,29 @@ exports.login = async(req, res) => {
         });
     }
 }
+
+exports.getProfile = async(req, res) => {
+    try {
+        // get user from req
+        const user = req.user;
+        // get profile for curr user
+        const profileDetails = await User.findById({_id: user.id}, {password: false})
+        .populate("department")
+        .populate("ticketsRaised")
+        .exec();
+
+        // return res
+        return res.status(200).json({
+            success: true,
+            profile: profileDetails,
+            message: "profile deatils fetched successfully!",
+        });
+
+    } catch(err) {
+        console.log("Error: ", err);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server error",
+        });
+    }
+}
