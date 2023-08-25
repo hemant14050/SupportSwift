@@ -6,7 +6,7 @@ exports.isLoggedIn = async(req, res, next) => {
         const token = req.cookies.token;
         // console.log("Toekn: ", token);
         if(!token) {
-            return res.status(500).json({
+            return res.status(401).json({
                 success: false,
                 message: `Token not found`,
             });
@@ -34,7 +34,7 @@ exports.isAdmin = async(req, res, next) => {
         // get user from req which is added in isLoggedIn middleware
         const user = req.user;
         if(user.role !== "Admin") {
-            return res.status(400).json({
+            return res.status(401).json({
                 success: false,
                 message: `This is protected route for admin`,
             });
