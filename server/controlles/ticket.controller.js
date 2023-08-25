@@ -208,7 +208,23 @@ exports.getMyTickets = async(req, res) => {
         // get user 
         const user = req.user;
         // find tickets by user id
-        const myTickets = await Ticket.find({createdBy: user.id});
+        const myTickets = await Ticket.find({createdBy: user.id})
+        .populate({
+            path: "createdBy",
+            select: "firstName lastName"
+        })
+        .populate({
+            path: "assignedTo",
+            select: "departmentName"
+        })
+        .populate({
+            path: "chats",
+            populate: {
+                path: "sender",
+                select: "firstName lastName"
+            }
+        })
+        .exec();
         // console.log(myTickets);
         // return res
         return res.status(200).json({
@@ -234,11 +250,19 @@ exports.getMyDepartmentTickets = async(req, res) => {
         const myDeptInfo = await Department.findById({_id: user.department})
         .populate({
             path: "ticketsAssigned",
-            populate: {
-                path: "createdBy",
-                // select: "-password"
-                select: "firstName lastName email department role"
-            }
+            populate: [
+                {
+                    path: "createdBy",
+                    // select: "-password"
+                    select: "firstName lastName email department role"
+                }, 
+                {
+                    path: "chats",
+                    populate: {
+                        path: "sender",
+                        select: "firstName lastName"
+                    }
+                }]
         })
         .exec();
 
