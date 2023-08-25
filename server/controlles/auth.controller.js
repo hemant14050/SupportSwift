@@ -118,6 +118,7 @@ exports.login = async(req, res) => {
                 lastName: currUser.lastName,
                 email: currUser.email,
                 role: currUser.role,
+                department: currUser.department,
             }
             currUser.password = undefined;
 

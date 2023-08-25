@@ -229,10 +229,9 @@ exports.getMyTickets = async(req, res) => {
 exports.getMyDepartmentTickets = async(req, res) => {
     try {
         const user = req.user;
-        // console.log(user);
+        // console.log(user.department);
 
-        const currUser = await User.findById({_id: user.id});
-        const myDeptInfo = await Department.findById({_id: currUser.department})
+        const myDeptInfo = await Department.findById({_id: user.department})
         .populate({
             path: "ticketsAssigned",
             populate: {
