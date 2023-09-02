@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Support Swift</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+    <!-- left menu bar -->
+    <div id="leftMenu"
+    class="bg-white shadow-lg flex flex-col px-4 py-3 h-screen w-[300px] fixed top-0 left-0 hidden
+    transition-all duration-200">
+    
+        <!-- close button -->
+        <div class="absolute top-3 right-3">
+            <button id="closeBtn" class="text-2xl">&times;</button>
+        </div>
+
+        <div>
+            <span class="font-bold text-xl">Dashboard</span>
+            <!-- line -->
+            <div class="h-0.5 bg-gray-300 my-4"></div>
+            <div class="flex flex-col gap-2">
+                <a href="/dashboard">
+                    <div class="font-semibold text-[#1973E7] text-md hover:text-[#1973E7]">Home</div>
+                </a>
+                <a href="/department">
+                    <div class="font-semibold text-md hover:text-[#1973E7]">Department Tickets</div>
+                </a>
+                <a href="/tickets">
+                    <div class="font-semibold text-md hover:text-[#1973E7]">My Tickets</div>
+                </a>
+                <a href="/raiseTicket">
+                    <div class="font-semibold text-md hover:text-[#1973E7]">Raise Ticket</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="absolute bottom-5">
+            <a href="/logout"
+            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+            Logout</a>
+        </div>
+    </div>
+
+    <!-- navbar -->
+    <nav
+    class="bg-white shadow-lg flex justify-between items-center px-4 py-3"
+    >
+        <!-- show menu button -->
+        <div class="flex gap-3">
+            <div id="showMenuBtn" class="text-2xl cursor-pointer">
+                &#9776;
+            </div>
+            <a href="/"><span class="text-2xl font-bold text-center"
+                >Support Swift</span></a>
+        </div>
+
+        <div class="profileSection flex items-center relative">
+            <!-- profile btn -->
+            <button id="profileBtn" class="h-10 w-10 rounded-full bg-gray-300">
+                <img
+                id="profilePic"
+                src="https://www.pngitem.com/pimgs/m/30-307416_profile-icon-png-image-free-download-searchpng-employee.png"
+                alt="profile pic"
+                class="h-full w-full object-cover rounded-full"
+                />
+            </button>
+        </div>
+
+        <div id="profileContent"
+        class="absolute top-12 right-0 bg-white shadow-lg rounded-md hidden transition-all duration-200 ease-in-out z-10"
+        >
+            <div class="flex flex-col gap-2 p-4">
+                <a href="/profile"
+                class="font-semibold text-md hover:text-[#1973E7]">Profile</a>
+                <a href="/logout"
+                class="font-semibold text-red-500 text-md hover:text-red-700">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- main content here -->
+    <div id="content"
+    class="flex justify-center h-screen mb-8">
+        
+    </div>
+
+    <script src="/js/dashboard.js"></script>
+    <script src="/js/leftPane.js"></script>
+    <script src="/js/profile.js"></script>
+    <script>
+        showProfile();
+    </script>
+
+</body>
+</html>

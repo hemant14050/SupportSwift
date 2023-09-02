@@ -94,18 +94,20 @@ exports.login = async(req, res) => {
         
         // check all fields are valid
         if(!email || !password) {
-            return res.status(400).json({
-                success: false,
-                message: "All fields are required!",
-            });
+            // return res.status(400).json({
+            //     success: false,
+            //     message: "All fields are required!",
+            // });
+            return res.render("login.ejs", {error: "All fields are required!"});
         }
         // check user with email
         const currUser = await User.findOne({email: email});
         if(!currUser) {
-            return res.status(402).json({
-                success: false,
-                message: "User with this email not exists!",
-            });
+            // return res.status(402).json({
+            //     success: false,
+            //     message: "User with this email not exists!",
+            // });
+            return res.render("login.ejs", {error: "User with this email not exists!"});
         }
         // check password
         if(await bcrypt.compare(password, currUser.password)) {
@@ -132,26 +134,29 @@ exports.login = async(req, res) => {
                 // cookie access by web-browser only
                 httpOnly: true,
             }
-            return res.cookie("token", token, options).status(200).json({
-                success: true,
-                user: currUser,
-                message: "User logged in successfullly!"
-            });
-            
+            // return res.cookie("token", token, options).status(200).json({
+            //     success: true,
+            //     user: currUser,
+            //     message: "User logged in successfullly!"
+            // });
+            return res.cookie("token", token, options).redirect("/dashboard");
+
         } else {
-            return res.status(401).json({
-                success: false,
-                message: "Password incorrect",
-            });
+            // return res.status(401).json({
+            //     success: false,
+            //     message: "Password incorrect",
+            // });
+            return res.render("login.ejs", {error: "Password incorrect!"});
         }
         // return response
 
     } catch(err) {
         console.log("Error: ", err);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server error",
-        });
+        // return res.status(500).json({
+        //     success: false,
+        //     message: "Internal Server error",
+        // });
+        return res.render("login.ejs", {error: "Internal Server error!"});
     }
 }
 

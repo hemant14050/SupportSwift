@@ -6,10 +6,11 @@ exports.isLoggedIn = async(req, res, next) => {
         const token = req.cookies.token;
         // console.log("Toekn: ", token);
         if(!token) {
-            return res.status(401).json({
-                success: false,
-                message: `Token not found`,
-            });
+            // return res.status(401).json({
+            //     success: false,
+            //     message: `Token not found`,
+            // });
+            return res.redirect("/auth/login");
         }
         // verify token jwt verify
         // get payload after verify
@@ -22,10 +23,11 @@ exports.isLoggedIn = async(req, res, next) => {
 
     } catch(err) {
         console.log("Error: ", err);
-        return res.status(500).json({
-            success: false,
-            message: `Internal server Error`,
-        });
+        // return res.status(500).json({
+        //     success: false,
+        //     message: `Internal server Error`,
+        // });
+        return res.redirect("/auth/login");
     }
 } 
 
