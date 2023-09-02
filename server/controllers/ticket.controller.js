@@ -6,7 +6,7 @@ const User = require("../models/User");
 exports.createTicket = async(req, res) => {
     try {
         // get data from req.body
-        const {title, description, priority, department, status} = req.body;
+        const {title, description, priority, department, status="Open"} = req.body;
         // get user req.user
         const user = req.user;
 
@@ -60,11 +60,12 @@ exports.createTicket = async(req, res) => {
             });
 
         // return response
-        return res.status(200).json({
-            success: true,
-            ticket: newTicket,
-            message: "Ticket created successfully!"
-        });
+        // return res.status(200).json({
+        //     success: true,
+        //     ticket: newTicket,
+        //     message: "Ticket created successfully!"
+        // });
+        return res.redirect('/raiseTicket/success?ticketId=' + newTicket._id + '&message=Ticket+created+successfully!');
 
     } catch(err) {
         console.log("Error: ", err);
