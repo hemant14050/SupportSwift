@@ -262,7 +262,12 @@ exports.getMyDepartmentTickets = async(req, res) => {
                         path: "sender",
                         select: "firstName lastName"
                     }
-                }]
+                },
+                {
+                    path: "assignedTo",
+                    select: "departmentName"
+                }
+            ]
         })
         .exec();
 
