@@ -9,7 +9,7 @@ const { isLoggedIn, isAdmin } = require("../middlewares/auth");
  * ***************************************************
  */
 router.post("/addDepartment", isLoggedIn, isAdmin, addDepartment);
-router.get("/getAllDepartments", isLoggedIn, isAdmin, getAllDepartments); 
+router.get("/getAllDepartments", isLoggedIn, getAllDepartments); 
 router.delete("/deleteDepartment/:id", isLoggedIn, isAdmin, deleteDepartment);
 
 module.exports = router;

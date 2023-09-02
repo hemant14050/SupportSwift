@@ -25,7 +25,7 @@
             <div class="h-0.5 bg-gray-300 my-4"></div>
             <div class="flex flex-col gap-2">
                 <a href="/dashboard">
-                    <div class="font-semibold text-[#1973E7] text-md hover:text-[#1973E7]">Home</div>
+                    <div class="font-semibold text-md hover:text-[#1973E7]">Home</div>
                 </a>
                 <a href="/department">
                     <div class="font-semibold text-md hover:text-[#1973E7]">Department Tickets</div>
@@ -34,7 +34,7 @@
                     <div class="font-semibold text-md hover:text-[#1973E7]">My Tickets</div>
                 </a>
                 <a href="/raiseTicket">
-                    <div class="font-semibold text-md hover:text-[#1973E7]">Raise Ticket</div>
+                    <div class="font-semibold text-[#1973E7] text-md hover:text-[#1973E7]">Raise Ticket</div>
                 </a>
             </div>
         </div>
@@ -48,8 +48,7 @@
 
     <!-- navbar -->
     <nav
-    class="bg-white shadow-lg flex justify-between items-center px-4 py-3"
-    >
+    class="bg-white shadow-lg flex justify-between items-center px-4 py-3">
         <!-- show menu button -->
         <div class="flex gap-3">
             <div id="showMenuBtn" class="text-2xl cursor-pointer">
@@ -72,8 +71,7 @@
         </div>
 
         <div id="profileContent"
-        class="absolute top-12 right-0 bg-white shadow-lg rounded-md hidden transition-all duration-200 ease-in-out z-10"
-        >
+        class="absolute top-12 right-0 bg-white shadow-lg rounded-md hidden transition-all duration-200 ease-in-out z-10">
             <div class="flex flex-col gap-2 p-4">
                 <a href="/profile"
                 class="font-semibold text-md hover:text-[#1973E7]">Profile</a>
@@ -85,22 +83,50 @@
 
     <!-- main content here -->
     <div id="content"
-    class="flex justify-center h-screen mb-8">
-         <!-- loader -->
+    class="flex flex-col px-4 items-center h-screen mb-8">
+        <!-- loader -->
         <div id="loader" class="hidden fixed top-0 left-0 w-screen h-screen flex justify-center items-center">
             <span class="spinner"></span>
         </div>
-        <div id="otherThanLoader" class="flex justify-center">
 
+        <div id="otherThanLoader" class="w-full justify-center">
+            <h1 class="text-2xl font-semibold mt-5 text-center">Raise Your Ticket</h1>
+            <form method="POST" action="/ticket/createTicket"
+            class="shadow-xl border-2 p-4 rounded-xl mx-auto w-full md:w-1/2 flex flex-col gap-2 font-semibold mt-5"
+            >
+                <label for="title">Title:</label>
+                <input type="text" id="title" name="title" required
+                class="border-2 border-gray-300 rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+                
+                <label for="description">Description:</label>
+                <textarea cols="1" rows="3" id="description" name="description" required
+                class="border-2 border-gray-300 rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"></textarea>
+                
+                <label for="priority">Priority:</label>
+                <select name="priority" id="priority" 
+                class="border-2 border-gray-300 rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                </select>
+
+                <label for="department">Department:</label>
+                <select name="department" id="department" 
+                class="border-2 border-gray-300 rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+                    <!-- options are dynamiccaly loader from  script -->
+                </select>
+                
+                <button type="submit" 
+                class="bg-blue-600 text-white rounded-md p-2 mt-3 hover:bg-blue-700 transition duration-300 ease-in-out"
+                >Raise Ticket</button>
+            </form>
         </div>
     </div>
 
     <script src="/js/dashboard.js"></script>
     <script src="/js/leftPane.js"></script>
     <script src="/js/profile.js"></script>
-    <script>
-        showProfile();
-    </script>
+    <script src="/js/raiseTicket.js"></script>
 
 </body>
 </html>

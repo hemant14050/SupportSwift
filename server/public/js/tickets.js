@@ -1,4 +1,7 @@
-function showTickets() {
+ const contentNode = document.getElementById("content");
+ 
+ function showTickets() {
+    loaderNode.classList.remove('hidden');
     fetch('/ticket/getMyTickets', {
         method: 'GET',
         headers: {
@@ -8,9 +11,14 @@ function showTickets() {
         return res.json();
     }).then((data) => {
         // console.log(data);
+        loaderNode.classList.add('hidden');
         if(data.success) {
             let tickets = data.tickets;
-            contentNode.innerHTML = "";
+            const headingNode = document.createElement('h1');
+            headingNode.classList.add('text-2xl', 'font-semibold', 'text-center', 'mt-5');
+            headingNode.innerText = "My Tickets";
+            contentNode.appendChild(headingNode);
+
             tickets.forEach((ticket) => {
                 let ticketNode = document.createElement('div');
                 ticketNode.classList.add('bg-white', 'shadow-lg', 'rounded-md', 'p-4', 'mt-5', 'w-11/12');
@@ -62,10 +70,12 @@ function showTickets() {
                 contentNode.appendChild(ticketNode);
             });
         } else {
-            alert("Something went wrong");
+            alert(data.message);
         }
     }).catch((err) => {
         console.log(err);
+        loaderNode.classList.add('hidden');
+        alert('Something went wrong. Please try again later.');
     });
 }
 

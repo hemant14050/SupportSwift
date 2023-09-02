@@ -68,6 +68,25 @@ app.get("/tickets", isLoggedIn, (req, res) => {
     }
 });
 
+app.get("/raiseTicket", isLoggedIn, (req, res) => {
+    if(req.user) {
+        return res.render("raiseTicket.ejs", {user: req.user});
+    } else {
+        return res.redirect("/auth/login");
+    }
+});
+
+app.get("/raiseTicket/success", isLoggedIn, (req, res) => {
+    if(req.user) {
+        const ticketId = req.query.ticketId;
+        const message = req.query.message;
+        return res.render("success.ejs", {data: {ticketId, message}});
+    } else {
+        return res.redirect("/auth/login");
+    }
+});
+
+
 
 app.listen(process.env.PORT, () => {
     console.log(`🚀Server is Running at PORT: ${process.env.PORT}`);

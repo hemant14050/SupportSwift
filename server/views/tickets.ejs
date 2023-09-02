@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Support Swift</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/loader.css">
 </head>
 <body class="bg-gray-100">
 
@@ -83,10 +84,12 @@
     <!-- main content here -->
     <div id="content" 
      class="flex flex-col items-center h-screen mb-8">
-        This is tickets page
+        <!-- loader -->
+        <div id="loader" class="hidden fixed top-0 left-0 w-screen h-screen flex justify-center items-center">
+            <span class="spinner"></span>
+        </div>
     </div>
 
-    <script src="/js/department.js"></script>
     <script src="/js/leftPane.js"></script>
     <script src="/js/profile.js"></script>
     <script src="/js/tickets.js"></script>

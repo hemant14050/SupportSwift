@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Support Swift</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="/css/loader.css">
 </head>
 <body class="bg-gray-100">
 
     <!-- left menu bar -->
-    <div id="leftMenu"
+    <div id="leftMenu"  
     class="bg-white shadow-lg flex flex-col px-4 py-3 h-screen w-[300px] fixed top-0 left-0 hidden
     transition-all duration-200">
     
@@ -25,7 +24,7 @@
             <div class="h-0.5 bg-gray-300 my-4"></div>
             <div class="flex flex-col gap-2">
                 <a href="/dashboard">
-                    <div class="font-semibold text-[#1973E7] text-md hover:text-[#1973E7]">Home</div>
+                    <div class="font-semibold text-md hover:text-[#1973E7]">Home</div>
                 </a>
                 <a href="/department">
                     <div class="font-semibold text-md hover:text-[#1973E7]">Department Tickets</div>
@@ -34,7 +33,7 @@
                     <div class="font-semibold text-md hover:text-[#1973E7]">My Tickets</div>
                 </a>
                 <a href="/raiseTicket">
-                    <div class="font-semibold text-md hover:text-[#1973E7]">Raise Ticket</div>
+                    <div class="font-semibold text-[#1973E7] text-md hover:text-[#1973E7]">Raise Ticket</div>
                 </a>
             </div>
         </div>
@@ -47,18 +46,17 @@
     </div>
 
     <!-- navbar -->
-    <nav
-    class="bg-white shadow-lg flex justify-between items-center px-4 py-3"
-    >
+    <nav class="bg-white shadow-lg flex justify-between items-center px-4 py-3">
         <!-- show menu button -->
         <div class="flex gap-3">
             <div id="showMenuBtn" class="text-2xl cursor-pointer">
                 &#9776;
             </div>
-            <a href="/"><span class="text-2xl font-bold text-center"
-                >Support Swift</span></a>
+            <a href="/">
+                <span class="text-2xl font-bold text-center">Support Swift</span>
+            </a>
         </div>
-
+        
         <div class="profileSection flex items-center relative">
             <!-- profile btn -->
             <button id="profileBtn" class="h-10 w-10 rounded-full bg-gray-300">
@@ -72,8 +70,7 @@
         </div>
 
         <div id="profileContent"
-        class="absolute top-12 right-0 bg-white shadow-lg rounded-md hidden transition-all duration-200 ease-in-out z-10"
-        >
+        class="absolute top-12 right-0 bg-white shadow-lg rounded-md hidden transition-all duration-200 ease-in-out z-10">
             <div class="flex flex-col gap-2 p-4">
                 <a href="/profile"
                 class="font-semibold text-md hover:text-[#1973E7]">Profile</a>
@@ -84,23 +81,26 @@
     </nav>
 
     <!-- main content here -->
-    <div id="content"
-    class="flex justify-center h-screen mb-8">
-         <!-- loader -->
-        <div id="loader" class="hidden fixed top-0 left-0 w-screen h-screen flex justify-center items-center">
-            <span class="spinner"></span>
+    <div id="content" 
+     class="flex flex-col justify-center items-center h-screen mb-8">
+        
+        <div class="w-full flex flex-col justify-center items-center mt-20 my-auto">
+            <img src="/assets/Eo_circle_green_white_checkmark.svg.png" alt="success"
+            class="h-20 w-20"
+            />
+            <% if(data) { %>
+                <p class="text-xl text-semibold mt-2">
+                    <%=data.message %>
+                </p>
+                <p class="text-gray-600 mt-1">
+                    Your ticket ID is <span class="text-gray-700"><%=data.ticketId %></span>
+                </p>
+            <% } %>
         </div>
-        <div id="otherThanLoader" class="flex justify-center">
 
-        </div>
     </div>
 
-    <script src="/js/dashboard.js"></script>
     <script src="/js/leftPane.js"></script>
     <script src="/js/profile.js"></script>
-    <script>
-        showProfile();
-    </script>
-
 </body>
 </html>
