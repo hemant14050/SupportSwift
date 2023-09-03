@@ -86,6 +86,15 @@ app.get("/raiseTicket/success", isLoggedIn, (req, res) => {
     }
 });
 
+app.get("/raiseTicket/error", isLoggedIn, (req, res) => {
+    if(req.user) {
+        const message = req.query.message;
+        return res.render("error.ejs", {data: {message}});
+    } else {
+        return res.redirect("/auth/login");
+    }
+});
+
 
 
 app.listen(process.env.PORT, () => {

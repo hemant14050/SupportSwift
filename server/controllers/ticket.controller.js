@@ -18,11 +18,12 @@ exports.createTicket = async(req, res) => {
         }
 
         // validation
-        if(!title || !description || !priority || !department || !status) {
-            return res.status(400).json({
-                success: false,
-                message: "All fields are required!"
-            });
+        if(!title.trim() || !description.trim() || !priority || !department || !status) {
+            // return res.status(400).json({
+            //     success: false,
+            //     message: "All fields are required!"
+            // });
+            return res.redirect('/raiseTicket/error?message=All+fields+are+required!');
         }
         // db call
         const oldDepartment = await Department.findOne({departmentName: department});
