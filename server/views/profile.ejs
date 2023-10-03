@@ -3,36 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Support Swift</title>
+    <title><%= data.user === "Admin"? "Admin":"User" %> - Profile</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="/css/loader.css">
 </head>
 <body class="bg-gray-100">
-
-    <!-- leftPane menu bar -->
-    <%- include('./partials/leftPane.ejs', {active: "dashboard"}) %>
 
     <!-- navbar -->
     <%- include('./partials/navbar.ejs') %>
 
-    <!-- main content here -->
-    <div id="content"
-    class="flex mt-12 justify-center h-screen mb-8">
-         <!-- loader -->
-        <div id="loader" class="hidden fixed top-0 left-0 w-screen h-screen flex justify-center items-center">
-            <span class="spinner"></span>
-        </div>
-        <div id="otherThanLoader" class="flex justify-center">
+    <div class="flex relative">
+        <!-- leftPane menu bar -->
+        <%- include('./partials/leftPane.ejs', {data: {
+            active: "dashboard",
+            user: data.user
+        }}) %>
 
+        <!-- main content here -->
+        <div id="content"
+        class="h-[calc(100vh-4.1rem)] lg:ml-[300px] mt-[3.7rem] mx-auto w-11/12 max-w-maxContent overflow-auto">
+                    
+            <div class="mx-auto w-11/12 max-w-[1000px] space-y-5 py-10">
+                <div id="otherThanLoader" class="flex justify-center">
+                    <!-- profile details -->
+                    <div class="bg-white shadow-lg rounded-md p-4 mt-5 max-h-[500px] w-11/12">
+                        <div class="flex flex-col gap-2">
+                            <div class="flex justify-center">
+                                <h1 class="text-2xl font-semibold">Profile</h1>
+                            </div>
+                            <!-- profile pic -->
+                            <div class="flex justify-center">
+                                <img
+                                id="profilePic"
+                                src="https://www.pngitem.com/pimgs/m/30-307416_profile-icon-png-image-free-download-searchpng-employee.png"
+                                alt="profile pic"
+                                class="h-40 w-40 object-cover rounded-full"
+                                />
+                            </div>
+
+                            <!-- info table -->
+                            <div class="flex flex-col gap-2">
+                                <table class="table-auto">
+                                    <tbody>
+                                        <tr>
+                                            <td class="p-2">Name:</td>
+                                            <td class="p-2"><%= data.profileData.firstName +" "+ data.profileData.lastName %></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-2">Email:</td>
+                                            <td class="p-2"><%= data.profileData.email %></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-2">Department:</td>
+                                            <td class="p-2"><%= data.profileData.department.departmentName %></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-2">Role:</td>
+                                            <td class="p-2"><%= data.profileData.role %></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-2">Account Created At:</td>
+                                            <td class="p-2"><%= new Date(data.profileData.createdAt).toLocaleString() %></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <script src="/js/dashboard.js"></script>
     <script src="/js/leftPane.js"></script>
     <script src="/js/profile.js"></script>
-    <script>
-        showProfile();
-    </script>
 
 </body>
 </html>

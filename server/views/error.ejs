@@ -3,30 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Support Swift</title>
+    <title>Error - An error occured!</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100">
 
-    <!-- leftPane menu bar -->
-    <%- include('./partials/leftPane.ejs', {active: "raiseTicket"}) %>
-
     <!-- navbar -->
     <%- include('./partials/navbar.ejs') %>
 
-    <!-- main content here -->
-    <div id="content" 
-     class="flex flex-col mt-12 justify-center items-center h-screen mb-8">
+    <div class="flex relative">
+        <!-- leftPane menu bar -->
+        <%- include('./partials/leftPane.ejs', {data: {
+            active: "raiseTicket",
+            user: data?.user
+        }}) %>
         
-        <div class="w-full flex flex-col justify-center items-center mt-20 my-auto">
-            <img src="/assets/png-clipart-computer-icons-error-closeup-miscellaneous-text-thumbnail.png" alt="success"
-            class="h-20 w-20"
-            />
-            <% if(data) { %>
-                <p class="text-xl text-semibold mt-2">
-                    <%=data.message %>
-                </p>
-            <% } %>
+        <!-- main content here -->
+        <div id="content"
+        class="h-[calc(100vh-4.1rem)] lg:ml-[300px] mt-[3.7rem] mx-auto w-11/12 max-w-maxContent overflow-auto">
+                    
+            <div class="w-full flex flex-col justify-center items-center mt-20 my-auto">
+                <img src="/assets/png-clipart-computer-icons-error-closeup-miscellaneous-text-thumbnail.png" alt="success"
+                class="h-20 w-20"
+                />
+                <% if(data) { %>
+                    <p class="text-xl text-semibold mt-2">
+                        <%=data.message %>
+                    </p>
+                <% } %>
+            </div>
         </div>
 
     </div>

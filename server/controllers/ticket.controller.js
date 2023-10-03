@@ -18,12 +18,13 @@ exports.createTicket = async(req, res) => {
         }
 
         // validation
-        if(!title.trim() || !description.trim() || !priority || !department || !status) {
-            // return res.status(400).json({
-            //     success: false,
-            //     message: "All fields are required!"
-            // });
-            return res.redirect('/raiseTicket/error?message=All+fields+are+required!');
+        if(!title?.trim() || !description?.trim() || !priority || !department || !status) {
+            return res.status(400).json({
+                success: false,
+                user: req.user,
+                message: "All fields are required!"
+            });
+            // return res.redirect('/raiseTicket/error?message=All+fields+are+required!');
         }
         // db call
         const oldDepartment = await Department.findOne({departmentName: department});
@@ -31,6 +32,7 @@ exports.createTicket = async(req, res) => {
         if(!oldDepartment) {
             return res.status(400).json({
                 success: false,
+                user: req.user,
                 message: "Department name is invalid"
             });
         }
@@ -61,17 +63,19 @@ exports.createTicket = async(req, res) => {
             });
 
         // return response
-        // return res.status(200).json({
-        //     success: true,
-        //     ticket: newTicket,
-        //     message: "Ticket created successfully!"
-        // });
-        return res.redirect('/raiseTicket/success?ticketId=' + newTicket._id + '&message=Ticket+created+successfully!');
+        return res.status(200).json({
+            success: true,
+            ticket: newTicket,
+            user: req.user,
+            message: "Ticket created successfully!"
+        });
+        // return res.redirect('/raiseTicket/success?ticketId=' + newTicket._id + '&message=Ticket+created+successfully!');
 
     } catch(err) {
         console.log("Error: ", err);
         return res.status(500).json({
             success: false,
+            user: req.user,
             message: "Internal Server error"
         });
     }
@@ -81,6 +85,7 @@ exports.getTicket = async(req, res) => {
     try {
         // get id
         const {id} = req.params;
+        // console.log("hemant bhai: ",id);
         // get status to update
         const currTicket = await Ticket.findById({_id: id})
         .populate("createdBy", {password: false})
@@ -96,23 +101,17 @@ exports.getTicket = async(req, res) => {
 
         // console.log(currTicket.createdBy._id);
         // console.log(new mongoose.Types.ObjectId(req.user.id));
-        if(!currTicket.createdBy._id.equals(new mongoose.Types.ObjectId(req.user.id))) {
-            return res.status(400).json({
+        if(!(currTicket.createdBy._id.equals(new mongoose.Types.ObjectId(req.user.id)) || currTicket.assignedTo.departmentName === req.user.departmentName || req.user.role === "Admin")) {
+            return res.status(400).json({ 
                 success: false,
                 message: `Ticket with id ${id} not found in you a/c`
-            });
-        }
-
-        if(!currTicket) {
-            return res.status(400).json({
-                success: true,
-                message: `Ticket with id ${id} not found`
             });
         }
 
         return res.status(200).json({
             success: true,
             ticket: currTicket,
+            user: req.user,
             message: "Ticket fetched successfully!"
         });
 
@@ -137,6 +136,27 @@ exports.updateTicket = async(req, res) => {
                 message: "Status not provided",
             });
         }
+        const currTicket = await Ticket.findById({_id: id})
+        .populate("createdBy", {password: false})
+        .populate("assignedTo")
+        .exec();
+
+        if(!currTicket) {
+            return res.status(400).json({
+                success: false,
+                message: `Ticket with id ${id} not found`
+            });
+        }
+
+        // console.log(currTicket.createdBy._id);
+        // console.log(new mongoose.Types.ObjectId(req.user.id));
+        if(!(currTicket.createdBy._id.equals(new mongoose.Types.ObjectId(req.user.id)) || currTicket.assignedTo.departmentName === req.user.departmentName || req.user.role === "Admin")) {
+            return res.status(400).json({
+                success: false,
+                message: `Ticket with id ${id} not found in you a/c`
+            });
+        }
+
         const updatedTicket = await Ticket.findByIdAndUpdate({_id: id}, {status: status});
         console.log("Status: ", status);
         return res.status(200).json({
@@ -164,6 +184,28 @@ exports.deleteTicket = async(req, res) => {
                 message: `Ticket id missing!`
             });
         }
+
+        const currTicket = await Ticket.findById({_id: id})
+        .populate("createdBy", {password: false})
+        .populate("assignedTo")
+        .exec();
+
+        if(!currTicket) {
+            return res.status(400).json({
+                success: false,
+                message: `Ticket with id ${id} not found`
+            });
+        }
+
+        // console.log(currTicket.createdBy._id);
+        // console.log(new mongoose.Types.ObjectId(req.user.id));
+        if(!(currTicket.createdBy._id.equals(new mongoose.Types.ObjectId(req.user.id)) || req.user.role === "Admin")) {
+            return res.status(400).json({
+                success: false,
+                message: `Ticket with id ${id} not found in you a/c`
+            });
+        }
+
         const deletedTicket = await Ticket.findByIdAndDelete({_id: id});
         // console.log(deletedTicket);
         if(!deletedTicket) {
@@ -210,6 +252,13 @@ exports.getMyTickets = async(req, res) => {
         // get user 
         const user = req.user;
         // find tickets by user id
+        if(!user) {
+            return res.status(401).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
         const myTickets = await Ticket.find({createdBy: user.id})
         .populate({
             path: "createdBy",
@@ -232,6 +281,7 @@ exports.getMyTickets = async(req, res) => {
         return res.status(200).json({
             success: true,
             tickets: myTickets,
+            user: req.user,
             message: "All my created tickets are fetched!"
         });
 
@@ -247,9 +297,16 @@ exports.getMyTickets = async(req, res) => {
 exports.getMyDepartmentTickets = async(req, res) => {
     try {
         const user = req.user;
-        // console.log(user.department);
+        // console.log(user.departmentId);
 
-        const myDeptInfo = await Department.findById({_id: user.department})
+        if(!user) {
+            return res.status(401).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        const myDeptInfo = await Department.findById({_id: user.departmentId})
         .populate({
             path: "ticketsAssigned",
             populate: [
@@ -275,7 +332,8 @@ exports.getMyDepartmentTickets = async(req, res) => {
 
         return res.status(200).json({
             success: true,
-            myDeptInfo,
+            departmentTickets: myDeptInfo.ticketsAssigned,
+            user: req.user,
             message: "myDeptInfo get successfully!"
         });
 

@@ -1,9 +1,9 @@
 <div id="leftMenu"
-class="bg-white shadow-lg flex flex-col px-4 py-3 h-screen w-[300px] fixed top-0 left-0 hidden
+class="bg-white shadow-lg flex flex-col px-4 py-3 h-[calc(100vh-4.1rem)] mt-[4rem] w-[300px] fixed top-0 left-0 bottom-0 hidden lg:flex
 transition-all duration-200 z-10">
 
     <!-- close button -->
-    <div class="absolute top-3 right-3">
+    <div class="absolute top-3 right-3 lg:hidden">
         <button id="closeBtn" class="text-2xl">&times;</button>
     </div>
 
@@ -14,17 +14,31 @@ transition-all duration-200 z-10">
         <% let activeColor = 'text-[#1973E7]'; %>
         <div class="flex flex-col gap-2">
             <a href="/dashboard">
-                <div class="font-semibold <% if(active=='dashboard') { %> <%=activeColor %> <%}%> text-md hover:text-[#1973E7]">Home</div>
+                <div class="font-semibold <% if(data?.active=='dashboard') { %> <%=activeColor %> <%}%> text-md hover:text-[#1973E7]">Home</div>
             </a>
-            <a href="/department">
-                <div class="font-semibold <% if(active=='department') { %> <%=activeColor %> <%}%> text-md hover:text-[#1973E7]">Department Tickets</div>
-            </a>
-            <a href="/tickets">
-                <div class="font-semibold <% if(active=='ticket') { %> <%=activeColor %> <%}%> text-md hover:text-[#1973E7]">My Tickets</div>
-            </a>
-            <a href="/raiseTicket">
-                <div class="font-semibold <% if(active=='raiseTicket') { %> <%=activeColor %> <%}%> text-md hover:text-[#1973E7]">Raise Ticket</div>
-            </a>
+            <% if(data.user.role === "Admin") { %>
+                <a href="/viewDepartments">
+                    <div class="font-semibold <% if(data?.active=='viewDepartments') { %> <%=activeColor %> <%}%> text-md hover:text-[#1973E7]">View Departments</div>
+                </a>
+
+                <a href="/addDepartment">
+                    <div class="font-semibold <% if(data?.active=='addDepartment') { %> <%=activeColor %> <%}%> text-md hover:text-[#1973E7]">Add Department</div>
+                </a>
+
+                <a href="/addUser">
+                    <div class="font-semibold <% if(data?.active=='addUsers') { %> <%=activeColor %> <%}%> text-md hover:text-[#1973E7]">Add User</div>
+                </a>
+            <% } else if(data.user.role === "User" ) { %>
+                <a href="/department">
+                    <div class="font-semibold <% if(data?.active=='department') { %> <%=activeColor %> <%}%> text-md hover:text-[#1973E7]">Department Tickets</div>
+                </a>
+                <a href="/tickets">
+                    <div class="font-semibold <% if(data?.active=='ticket') { %> <%=activeColor %> <%}%> text-md hover:text-[#1973E7]">My Tickets</div>
+                </a>
+                <a href="/raiseTicket">
+                    <div class="font-semibold <% if(data?.active=='raiseTicket') { %> <%=activeColor %> <%}%> text-md hover:text-[#1973E7]">Raise Ticket</div>
+                </a>
+            <% } %>
         </div>
     </div>
 

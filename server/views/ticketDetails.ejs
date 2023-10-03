@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= data.user.role === "Admin"? "Admin":"User"%> - Ticket Details</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+    <!-- navbar -->
+    <%- include('./partials/navbar.ejs') %>
+
+    <div class="flex relative">
+        <!-- leftPane menu bar -->
+        <%- include('./partials/leftPane.ejs', {data: {
+            active: data.user.role === "Admin"? "viewDepartments":"department",
+            user: data.user
+        }}) %>
+
+        <!-- main content here -->
+        <div id="content"
+        class="h-[calc(100vh-4.1rem)] lg:ml-[300px] mt-[1rem] mx-auto w-11/12 max-w-maxContent overflow-auto">
+                    
+            <div class="mx-auto flex flex-col items-center w-11/12 max-w-[1000px] space-y-5 py-10">
+                <div mainContainer id="mainContainer"
+                class="w-full flex flex-col md:flex-row justify-center mx-auto mt-8 px-4 gap-4">
+
+                    <!-- ticket table -->
+                    <div class="md:w-[500px] w-full bg-white shadow-lg p-4 rounded-lg flex flex-col gap-3">
+                        <table class="flex gap-2">
+                            <tbody>
+                                <tr>
+                                    <td class="text-gray-700 px-1 py-2"><strong>Ticket Id:</strong></td>
+                                    <td class="text-gray-700 px-1 py-2"><%= data.ticketData._id %></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-gray-700 px-1 py-2"><strong>Title:</strong></td>
+                                    <td class="text-gray-700 px-1 py-2"><%= data.ticketData.title %></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-gray-700 px-1 py-2"><strong>Desciption:</strong></td>
+                                    <td class="text-gray-700 px-1 py-2"><%= data.ticketData.description %></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-gray-700 px-1 py-2"><strong>Priority:</strong></td>
+                                    <td class="text-gray-700 px-1 py-2"><%= data.ticketData.priority %></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-gray-700 px-1 py-2"><strong>Status:</strong></td>
+                                    <td class="text-gray-700 px-1 py-2 flex items-center gap-1">
+                                    <p><%= data.ticketData.status %></p>
+                                    <% if(data.ticketData.createdBy._id !== data.user.id) { %>
+                                        <div class="flex flex-wrap gap-2">
+                                            <select dataStatus class="border-2 border-gray-300 rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent" name="status" id="status">
+                                                <% if(data.ticketData.status !== "Open") { %>
+                                                    <option value="Open">Open</option>
+                                                <% } %>
+                                                <% if(data.ticketData.status !== "In Progress") { %>
+                                                    <option value="In Progress">In Progress</option>
+                                                <% } %>
+                                                <% if(data.ticketData.status !== "Closed") { %>
+                                                    <option value="Closed">Closed</option>
+                                                <% } %>
+                                            </select>
+                                            <button onclick="updateStatus('<%= data?.ticketData?._id %>')" 
+                                            class="bg-blue-500 text-white px-2 py-1 rounded-lg hover:bg-blue-700">
+                                            Update Status</button>
+                                        </div>
+                                    <% } %>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-gray-700 px-1 py-2"><strong>Raised By:</strong></td>
+                                    <td class="text-gray-700 px-1 py-2"><%= data.ticketData.createdBy.firstName %> <%= data.ticketData.createdBy.lastName %> [<%= data.ticketData.createdBy.email %>]</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-gray-700 px-1 py-2"><strong>Assignees:</strong></td>
+                                    <td class="text-gray-700 px-1 py-2"><%= data.ticketData.assignedTo.departmentName %></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-gray-700 px-1 py-2"><strong>Created At:</strong></td>
+                                    <td class="text-gray-700 px-1 py-2"><%= new Date(data.ticketData.createdAt).toLocaleString() %></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-gray-700 px-1 py-2"><strong>Updated At:</strong></td>
+                                    <td class="text-gray-700 px-1 py-2"><%= new Date(data.ticketData.updatedAt).toLocaleString() %></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div id="chatContainer" class="md:w-[500px] w-full bg-white shadow-lg p-4 rounded-lg flex flex-col gap-3">
+                        <h2 class="font-semibold text-gray-700">Chat for Ticket Id: <p class="text-gray-500"><%=data.user.id%></p></h2>
+                        <div class="h-[1px] bg-gray-500"></div>
+                        <div id="chat-container" class=" border-2 max-h-[450px] min-h-[450px] p-2 w-full overflow-y-scroll flex flex-col gap-2">
+                            
+                            <% if(data?.chatData?.chats?.length === 0) { %>
+                                <div class="msgNode flex text-sm text-gray-700 w-full gap-2">
+                                    <div class="flex flex-col w-full">
+                                        <div class="w-full flex justify-between">
+                                            <p class=""><strong>No one started chat yet!</strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% } %>
+
+                            <% if(data?.chatData) { %>
+                                <% data?.chatData?.chats?.forEach((chat)=> { %>
+                                    <div class="msgNode flex text-sm text-gray-700 w-full gap-2">
+                                        <div class="flex flex-col w-full">
+                                            <div class="w-full flex justify-between">
+                                                <p class=""><strong><%= chat.sender.firstName %> <%= chat.sender.lastName %> <%= chat.sender._id === data.user.id ? "(Self)" : "" %></strong></p>
+                                                <p>(<%= new Date(chat.createdAt).toLocaleDateString() %>) <%= new Date(chat.createdAt).toLocaleTimeString() %></p>
+                                            </div>
+                                            <div class="mr-10">
+                                                <%= chat.text %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% }) %>
+                            <% } %>
+                            
+                        </div>
+                        <div class="flex justify-between items-center gap-2">
+                            <input data-message 
+                            type="text" 
+                            name="message" 
+                            placeholder="type your message here..." 
+                            autocomplete="off" 
+                            required
+                            class="w-full border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+                            
+                            <label for="file" 
+                            class="h-full grid place-items-center bg-blue-500 p-2 px-4 rounded-md text-white hover:bg-blue-700 cursor-pointer">
+                                File
+                            </label> 
+                            <input data-file hidden type="file" name="file" id="file">
+
+                            <button onclick="sendMessageHandler()" 
+                            class="h-full grid place-items-center bg-blue-500 p-2 rounded-md px-4 text-white hover:bg-blue-700">
+                                Send
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>  
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/leftPane.js"></script>
+    <script src="/js/profile.js"></script>
+    <script>
+        const currTicketId = "<%= data.ticketData._id %>";
+        const userId = "<%= data.user.id %>";
+        const firstName = "<%= data.user.firstName %>";
+        const lastName = "<%= data?.user.lastName %>";
+
+        // console.log(currTicketId, userId, firstName, lastName);
+
+        const dataMessageNode = document.querySelector("[data-message]");
+        const dataFileNode = document.querySelector("[data-file]");
+        const chatContainerNode = document.getElementById("chat-container");
+
+        const socket = io();
+
+        socket.on("connect", () => {
+            console.log("Connected to server");
+        });
+
+        socket.on("disconnect", () => {
+            console.log("Disconnected from server");
+        });
+
+        socket.emit("joinRoom", {ticketId: currTicketId, userId: userId, userData: {firstName, lastName}});
+
+        socket.on("message", ({message, userIdSS}) => {
+            // console.log("message", message, userIdSS, userId);
+            
+            const newMsgNode = document.createElement("div");
+            newMsgNode.className = "msgNode flex text-sm text-gray-700 w-full gap-2";
+            newMsgNode.innerHTML = `
+                <div class="flex flex-col w-full">
+                    <div class="w-full flex justify-between">
+                        <p class=""><strong>${message.sender.firstName} ${message.sender.lastName} ${userIdSS === userId ? "(Self)":""}</strong></p>
+                        <p>(${new Date(message.createdAt).toLocaleDateString()}) ${new Date(message.createdAt).toLocaleTimeString()}</p>
+                    </div>
+                    <div class="mr-10">
+                        ${message.text}
+                    </div>
+                </div>
+            `;
+            if(chatContainerNode.children.length === 1 && chatContainerNode.children[0].innerText === "No one started chat yet!") {
+                chatContainerNode.innerHTML = "";
+            }
+            chatContainerNode.appendChild(newMsgNode);
+
+            // scroll
+            chatContainerNode.scrollTop = chatContainerNode.scrollHeight;
+
+        });
+
+        dataMessageNode.addEventListener("keypress", (e) => {
+            if(e.key === "Enter") {
+                sendMessageHandler();
+            }
+        });
+
+        async function sendMessageHandler() {
+            const text = dataMessageNode.value;
+            // const file = dataFileNode.files[0];
+
+            if(!text.trim()) {
+                alert("Message is required");
+                return;
+            }
+
+            socket.emit("sendMessage", {text, ticketId: currTicketId, userId: userId});
+            dataMessageNode.value = "";
+            const response = await fetch(`/api/v1/ticket/${currTicketId}/chat/postChat`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({text: text}),
+            });
+            const result = await response.json();
+            if(result.success) {
+                console.log("Message sent successfully");
+            } else {
+                console.log(result);
+                alert("Could not send message");
+                window.location.reload();
+            }
+        }
+
+        "<% if(data?.ticketData?.createdBy?._id !== data?.user?.id) { %>"
+            async function updateStatus(ticketId) {
+                const dataStatusNode = document.querySelector("[dataStatus]");
+                // console.log(dataStatusNode.value);
+                const status = dataStatusNode.value;
+                
+                const response = await fetch(`/api/v1/ticket/updateTicket/${ticketId}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({status: status}),
+                });
+                const result = await response.json();
+                // console.log(result);
+                if(result.success) {
+                    window.location.reload();
+                } else {
+                    console.log(result);
+                    alert("Something went wrong");
+                }
+            }    
+        "<% } %>"
+    </script>
+    
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Add Department</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+    <!-- navbar -->
+    <%- include('./partials/navbar.ejs') %>
+
+    <div class="flex relative">
+        <!-- leftPane menu bar -->
+        <%- include('./partials/leftPane.ejs', {data: {
+            active: "addDepartment",
+            user: data.user
+        }}) %>
+        
+        <!-- main content here -->
+        <div id="content"
+        class="h-[calc(100vh-4.1rem)] lg:ml-[300px] mt-[3.7rem] mx-auto w-11/12 max-w-maxContent overflow-auto">
+                    
+            <div class="mx-auto flex flex-col items-center w-11/12 max-w-[1000px] space-y-5 py-10">
+
+                <h1 class="text-2xl font-semibold mt-5 text-center">Add New Department</h1>
+                <div
+                class="shadow-xl flex flex-col md:flex-row border-2 p-4 rounded-xl mx-auto mx-auto w-full md:w-[500px] flex items-center justify-center gap-2 font-semibold mt-5"
+                >
+                    <label for="deptName">Department Name:</label>
+                    <input type="text" id="deptName" name="title" required
+                    placeholder="Enter department name"
+                    class="border-2 border-gray-300 rounded-md py-1 px-2 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+
+                    <button type="submit" 
+                    onclick="createDepartment()"
+                    class="bg-blue-600 text-white rounded-md px-2 py-1 hover:bg-blue-700 transition duration-300 ease-in-out"
+                    >Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/leftPane.js"></script>
+    <script src="/js/profile.js"></script>
+    <script>
+        async function createDepartment() {
+            const deptName = document.getElementById('deptName').value;
+            const response = await fetch('/api/v1/department/addDepartment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({departmentName: deptName})
+            });
+            const data = await response.json();
+            if (data.success) {
+                alert(data.message);
+                window.location.href = '/viewDepartments';
+            } else {
+                alert(data.message);
+            }
+        }
+    </script>
+
+</body>
+</html>

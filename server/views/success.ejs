@@ -3,33 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Support Swift</title>
+    <title>Success!</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100">
 
-    <!-- leftPane menu bar -->
-    <%- include('./partials/leftPane.ejs', {active: "raiseTicket"}) %>
-
-    <!-- navbar -->
+    <!-- navbar --> 
     <%- include('./partials/navbar.ejs') %>
 
-    <!-- main content here -->
-    <div id="content" 
-     class="flex flex-col mt-12 justify-center items-center h-screen mb-8">
+    <div class="flex relative">
+        <!-- leftPane menu bar -->
+        <%- include('./partials/leftPane.ejs', {data: {
+            active: "raiseTicket",
+            user: data?.user
+        }}) %>
         
-        <div class="w-full flex flex-col justify-center items-center mt-20 my-auto">
-            <img src="/assets/Eo_circle_green_white_checkmark.svg.png" alt="success"
-            class="h-20 w-20"
-            />
-            <% if(data) { %>
-                <p class="text-xl text-semibold mt-2">
-                    <%=data.message %>
-                </p>
-                <p class="text-gray-600 mt-1">
-                    Your ticket ID is <span class="text-gray-700"><%=data.ticketId %></span>
-                </p>
-            <% } %>
+        <!-- main content here -->
+        <div id="content"
+        class="h-[calc(100vh-4.1rem)] lg:ml-[300px] mt-[3.7rem] mx-auto w-11/12 max-w-maxContent overflow-auto">
+                    
+            <div class="mx-auto w-11/12 max-w-[1000px] space-y-5 py-10">
+                <div class="w-full flex flex-col justify-center items-center mt-20 my-auto">
+                    <img src="/assets/Eo_circle_green_white_checkmark.svg.png" alt="success"
+                    class="h-20 w-20"
+                    />
+                    <% if(data) { %>
+                        <p class="text-xl text-semibold mt-2">
+                            <%=data.message %>
+                        </p>
+                        <p class="text-gray-600 mt-1">
+                            Your ticket ID is <span class="text-gray-700"><%=data.ticketId %></span>
+                        </p>
+                    <% } %>
+                </div>
+            </div>
         </div>
 
     </div>

@@ -1,13 +1,54 @@
 const express = require("express");
 const app = express();
 require("dotenv").config();
+const {createServer} = require("http");
+const server = createServer(app);
+const { Server } = require('socket.io');
+const io = new Server(server);
+
+// =======================================SOCKET.IO STARTS=======================================
+const {
+    getAllOnlineUsers, 
+    setOnlineUser, 
+    getOnlineUser, 
+    deleteOnlineUser
+} = require("./data/onlineUsers");
+
+io.on("connection", (socket) => {
+    console.log("New Socket Connection");
+
+    socket.on("joinRoom", ({ticketId, userId, userData}) => {
+        // console.log("joinRoom", ticketId, userId, userData);
+        socket.join(ticketId);
+        setOnlineUser({ticketId, userId, socketId: socket.id, userData});
+        // console.log(getAllOnlineUsers());
+    });
+
+    socket.on("sendMessage", ({ticketId, userId, text}) => {
+
+        // console.log("sendMessage", ticketId, userId, text);
+        const onlineUser = getOnlineUser({ticketId, userId});
+        if(onlineUser) {
+            io.to(ticketId).emit("message", {message: {text, sender: onlineUser.userData, createdAt: Date.now()}, userIdSS: userId});
+        }
+    });
+
+    socket.on("disconnect", () => {
+        console.log("Socket Disconnected");
+        deleteOnlineUser(socket.id);
+        // console.log(getAllOnlineUsers());
+    });
+});
+
+// =======================================SOCKET.IO ENDS=======================================
+
+
 const {connectDb} = require("./config/database");
 const cookieParser = require('cookie-parser');
 const authRoutes = require("./routes/auth.routes");
 const departmentRoutes = require("./routes/department.routes");
 const ticketRoutes = require("./routes/ticket.routes");
 const chatRoutes  = require("./routes/chat.routes");
-const { isLoggedIn } = require("./middlewares/auth");
 
 app.use(cookieParser());
 app.use(express.json());
@@ -16,87 +57,75 @@ app.use(express.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
 
-app.use("/auth", authRoutes);
-app.use("/department", departmentRoutes);
-app.use("/ticket", ticketRoutes);
-app.use("/ticket", chatRoutes);
+// =======================================MAIN API STARTS=======================================
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/department", departmentRoutes);
+app.use("/api/v1/ticket", ticketRoutes);
+app.use("/api/v1/ticket", chatRoutes);
+// =======================================MAIN API ENDS=======================================
 
 connectDb();
+
+
+const {
+    dashboardRouteHandler, 
+    departmentRouteHandler,
+    ticketsRouteHandler,
+    raiseTicketRouteHandler,
+    createTicketHandler,
+    profileRouteHandler,
+    ticketDetailsHandler,
+    loginRoutePostHandler,
+    viewDepartmentsHandler,
+    addDepartmentHandler,
+    addUserRouteHandler,
+
+} = require("./webServer");
 
 app.get("/", (req, res) => {
     res.sendFile("index.html");
 });
 
-app.get("/auth/login", (req, res) => {
+app.get("/login", (req, res) => {
     res.render("login.ejs" , {error: null});
 });
 
-app.get("/dashboard", isLoggedIn, (req, res) => {
-    if(req.user) {
-        return res.render("dashboard.ejs", {user: req.user});
-    } else {
-        return res.redirect("/auth/login");
-    }
-});
+// login post handler
+app.post("/login", loginRoutePostHandler);
 
+app.get("/dashboard", dashboardRouteHandler);
+app.get("/profile", profileRouteHandler);
 app.get("/logout", (req, res) => {
     res.clearCookie("token");
-    return res.redirect("/auth/login");
+    return res.redirect("/login");
 });
 
-app.get("/department", isLoggedIn, (req, res) => {
-    if(req.user) {
-        return res.render("department.ejs", {user: req.user});
-    } else {
-        return res.redirect("/auth/login");
-    }
-});
+/*********************************************************************
+ ************************* USER ROUTES STARTS ************************
+ *********************************************************************/
+app.get("/department", departmentRouteHandler);
+app.get("/tickets", ticketsRouteHandler);
+app.get("/raiseTicket", raiseTicketRouteHandler);
 
-app.get("/profile", isLoggedIn, (req, res) => {
-    if(req.user) {
-        return res.render("profile.ejs", {user: req.user});
-    } else {
-        return res.redirect("/auth/login");
-    }
-});
+// create ticket post handler
+app.post("/ticket/createTicket", createTicketHandler);
+app.get("/department/ticket/:id", ticketDetailsHandler);
+/*********************************************************************
+ ************************* USER ROUTES ENDS **************************
+ *********************************************************************/
 
-app.get("/tickets", isLoggedIn, (req, res) => {
-    if(req.user) {
-        return res.render("tickets.ejs", {user: req.user});
-    } else {
-        return res.redirect("/auth/login");
-    }
-});
+/*********************************************************************
+ ************************* ADMIN ROUTES STARTS ************************
+ *********************************************************************/
 
-app.get("/raiseTicket", isLoggedIn, (req, res) => {
-    if(req.user) {
-        return res.render("raiseTicket.ejs", {user: req.user});
-    } else {
-        return res.redirect("/auth/login");
-    }
-});
+app.get("/viewDepartments", viewDepartmentsHandler);
+app.get("/addDepartment", addDepartmentHandler);
+app.get("/addUser", addUserRouteHandler);
 
-app.get("/raiseTicket/success", isLoggedIn, (req, res) => {
-    if(req.user) {
-        const ticketId = req.query.ticketId;
-        const message = req.query.message;
-        return res.render("success.ejs", {data: {ticketId, message}});
-    } else {
-        return res.redirect("/auth/login");
-    }
-});
+/*********************************************************************
+ ************************* ADMIN ROUTES ENDS *************************
+ *********************************************************************/
 
-app.get("/raiseTicket/error", isLoggedIn, (req, res) => {
-    if(req.user) {
-        const message = req.query.message;
-        return res.render("error.ejs", {data: {message}});
-    } else {
-        return res.redirect("/auth/login");
-    }
-});
-
-
-
-app.listen(process.env.PORT, () => {
+server.listen(process.env.PORT, () => {
     console.log(`🚀Server is Running at PORT: ${process.env.PORT}`);
 });

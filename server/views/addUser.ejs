@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Add User</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+    <!-- navbar -->
+    <%- include('./partials/navbar.ejs') %>
+
+    <div class="flex relative">
+        <!-- leftPane menu bar -->
+        <%- include('./partials/leftPane.ejs', {data: {
+            active: "addDepartment",
+            user: data.user
+        }}) %>
+
+        <!-- main content here -->
+        <div id="content"
+        class="h-[calc(100vh-4.1rem)] lg:ml-[300px] mt-[3.7rem] mx-auto w-11/12 max-w-maxContent overflow-auto">
+                    
+            <div class="mx-auto flex flex-col items-center w-11/12 max-w-[1000px] space-y-5 py-10">
+
+                <h1 class="text-2xl font-semibold mt-5 text-center">Create New User</h1>
+                    <div
+                    class="shadow-xl border-2 p-4 rounded-xl mx-auto mx-auto w-full md:w-[500px] flex flex-col gap-2 font-semibold mt-5"
+                    >
+                        <label for="firstName">First Name:</label>
+                        <input type="text" id="firstName" name="firstName" required
+                        class="border-2 border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+                        
+                        <label for="lastName">Last Name:</label>
+                        <input type="text" id="lastName" name="lastName" required
+                        class="border-2 border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+
+                        <label for="email">Email Address:</label>
+                        <input type="text" id="email" name="email" required
+                        class="border-2 border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+
+                        <label for="departmentName">Department:</label>
+                        <select name="departmentName" id="departmentName" 
+                        class="border-2 border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+                            <!-- options are dynamiccaly loader from  script -->
+                            <option value="default" disabled selected>Choose option</option>
+                            <% data.allDepartments.forEach((department) => { %>
+                                <option value="<%= department.departmentName %>"><%= department.departmentName %></option>
+                            <% }) %>
+                        </select>
+                        
+                        <button type="button" onclick="formSubmitHandler()"
+                        class="bg-blue-600 text-white rounded-md p-2 mt-3 hover:bg-blue-700 transition duration-300 ease-in-out"
+                        >Create</button>
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/leftPane.js"></script>
+    <script src="/js/profile.js"></script>
+    <script>
+        async function formSubmitHandler() {
+            const formData = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                role: "User",
+                departmentName: document.getElementById('departmentName').value
+            }
+
+            const response = await fetch('/api/v1/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+            const data = await response.json();
+            if(data.success) {
+                alert(data.message);
+            } else {
+                alert(data.message);
+            }
+        }
+    </script>
+
+</body>
+</html>

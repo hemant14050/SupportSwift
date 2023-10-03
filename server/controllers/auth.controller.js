@@ -4,6 +4,7 @@ const generatePassword = require("generate-password");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const {sendMail} = require("../utils/mailer");
+const Ticket = require("../models/Ticket");
 
 /**
  * 200 - Success
@@ -94,20 +95,20 @@ exports.login = async(req, res) => {
         
         // check all fields are valid
         if(!email || !password) {
-            // return res.status(400).json({
-            //     success: false,
-            //     message: "All fields are required!",
-            // });
-            return res.render("login.ejs", {error: "All fields are required!"});
+            return res.status(400).json({
+                success: false,
+                message: "All fields are required!",
+            });
         }
         // check user with email
-        const currUser = await User.findOne({email: email});
+        const currUser = await User.findOne({email: email})
+        .populate("department")
+        .exec();
         if(!currUser) {
-            // return res.status(402).json({
-            //     success: false,
-            //     message: "User with this email not exists!",
-            // });
-            return res.render("login.ejs", {error: "User with this email not exists!"});
+            return res.status(402).json({
+                success: false,
+                message: "User with this email not exists!",
+            });
         }
         // check password
         if(await bcrypt.compare(password, currUser.password)) {
@@ -120,7 +121,8 @@ exports.login = async(req, res) => {
                 lastName: currUser.lastName,
                 email: currUser.email,
                 role: currUser.role,
-                department: currUser.department,
+                departmentId: currUser.department._id, 
+                departmentName: currUser.department.departmentName,
             }
             currUser.password = undefined;
 
@@ -134,29 +136,27 @@ exports.login = async(req, res) => {
                 // cookie access by web-browser only
                 httpOnly: true,
             }
-            // return res.cookie("token", token, options).status(200).json({
-            //     success: true,
-            //     user: currUser,
-            //     message: "User logged in successfullly!"
-            // });
-            return res.cookie("token", token, options).redirect("/dashboard");
+            return res.cookie("token", token, options).status(200).json({
+                success: true,
+                token: token,
+                user: currUser,
+                message: "User logged in successfullly!"
+            });
 
         } else {
-            // return res.status(401).json({
-            //     success: false,
-            //     message: "Password incorrect",
-            // });
-            return res.render("login.ejs", {error: "Password incorrect!"});
+            return res.status(401).json({
+                success: false,
+                message: "Password incorrect",
+            });
         }
         // return response
 
     } catch(err) {
         console.log("Error: ", err);
-        // return res.status(500).json({
-        //     success: false,
-        //     message: "Internal Server error",
-        // });
-        return res.render("login.ejs", {error: "Internal Server error!"});
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server error",
+        });
     }
 }
 
@@ -174,6 +174,7 @@ exports.getProfile = async(req, res) => {
         return res.status(200).json({
             success: true,
             profile: profileDetails,
+            user: req.user,
             message: "profile deatils fetched successfully!",
         });
 
@@ -184,4 +185,35 @@ exports.getProfile = async(req, res) => {
             message: "Internal Server error",
         });
     }
+}
+
+exports.deleteUser = async(req, res) => {
+    try {
+        const {userId} = req.body;
+
+        // check if user exists
+        const userExists = await User.findById({_id: userId});
+        if(!userExists) {
+            return res.status(400).json({
+                success: false,
+                message: "User not exists!",
+            });
+        }
+
+        // delete user
+        await User.deleteOne({_id: userId});
+        await Ticket.deleteMany({createdBy: userId});
+
+        return res.status(200).json({
+            success: true,
+            message: "User deleted successfully!",
+        });
+    } catch(err) {
+        console.log("Error: ", err);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server error",
+        });
+    }
+    
 }

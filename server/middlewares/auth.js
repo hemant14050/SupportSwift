@@ -3,14 +3,13 @@ const jwt = require("jsonwebtoken");
 exports.isLoggedIn = async(req, res, next) => {
     try {
         // get token
-        const token = req.cookies.token;
-        // console.log("Toekn: ", token);
+        const token = req.cookies?.token || req.header("Authorization")?.replace("Bearer ", "") || req.body?.token;
+        // console.log("Token: ", token);
         if(!token) {
-            // return res.status(401).json({
-            //     success: false,
-            //     message: `Token not found`,
-            // });
-            return res.redirect("/auth/login");
+            return res.status(401).json({
+                success: false,
+                message: `Token not found`,
+            });
         }
         // verify token jwt verify
         // get payload after verify
@@ -23,11 +22,10 @@ exports.isLoggedIn = async(req, res, next) => {
 
     } catch(err) {
         console.log("Error: ", err);
-        // return res.status(500).json({
-        //     success: false,
-        //     message: `Internal server Error`,
-        // });
-        return res.redirect("/auth/login");
+        return res.status(500).json({
+            success: false,
+            message: `Internal server Error`,
+        });
     }
 } 
 

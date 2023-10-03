@@ -1,5 +1,6 @@
 const Chat = require("../models/Chat");
 const Ticket = require("../models/Ticket");
+const { default: mongoose } = require("mongoose");
 
 exports.handlePostChat = async(req, res) => {
     try {
@@ -8,11 +9,28 @@ exports.handlePostChat = async(req, res) => {
         const ticketId = req.params.id;
         const {text} = req.body;
 
-        const exists = await Ticket.findById({_id: ticketId});
+        if(!text.trim()) {
+            return res.status(400).json({
+                success: false,
+                message: "Text is required"
+            });
+        }
+        
+        const exists = await Ticket.findById({_id: ticketId})
+        .populate("createdBy", {password: false})
+        .populate("assignedTo")
+        .exec();
         if(!exists) {
             return res.status(400).json({
                 success: false,
                 message: "Ticket id invalid, chat not posted"
+            });
+        }
+
+        if(!(exists.createdBy._id.equals(new mongoose.Types.ObjectId(req.user.id)) || exists.assignedTo.departmentName === req.user.departmentName || req.user.role === "Admin")) {
+            return res.status(400).json({ 
+                success: false,
+                message: `Ticket with id ${ticketId} not found in you a/c`
             });
         }
 
@@ -57,11 +75,22 @@ exports.handleGetChat = async(req, res) => {
         const user = req.user;
         const ticketId = req.params.id;
 
-        const exists = await Ticket.findById({_id: ticketId});
+        const exists = await Ticket.findById({_id: ticketId})
+        .populate("createdBy", {password: false})
+        .populate("assignedTo")
+        .exec();
+
         if(!exists) {
             return res.status(400).json({
                 success: false,
                 message: "Ticket id invalid, chat cannot get"
+            });
+        }
+
+        if(!(exists.createdBy._id.equals(new mongoose.Types.ObjectId(req.user.id)) || exists.assignedTo.departmentName === req.user.departmentName || req.user.role === "Admin")) {
+            return res.status(400).json({ 
+                success: false,
+                message: `Ticket with id ${id} not found in you a/c`
             });
         }
 

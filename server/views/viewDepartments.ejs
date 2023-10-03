@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - View Deaprtments</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+    <!-- navbar -->
+    <%- include('./partials/navbar.ejs') %>
+
+    <div class="flex relative">
+        <!-- leftPane menu bar -->
+        <%- include('./partials/leftPane.ejs', {data: {
+            active: "viewDepartments",
+            user: data?.user
+        }}) %>
+
+        <!-- main content here -->
+        <div id="content"
+        class="h-[calc(100vh-4.1rem)] lg:ml-[300px] mt-[3.7rem] mx-auto w-11/12 max-w-maxContent overflow-auto">
+                    
+            <div class="mx-auto w-11/12 max-w-[1000px] space-y-5 py-10">
+                <% if(data?.returnData) { %>
+                    <% data?.returnData.map((dept) => { %>
+                        <details>
+                            <summary class="text-xl font-semibold"><%= dept.departmentName %></summary>
+                            <details class="ml-4 my-2">
+                                <summary class="text-lg font-semibold">
+                                    Tickets 
+                                    <span class="text-sm font-normal text-gray-600">
+                                        (<%= dept?.ticketsAssigned.length %>)
+                                    </span>
+                                </summary>
+                                <div>
+                                    <table class="table-auto w-full border-collapse">
+                                        <tr class="font-semibold border border-gray-800">
+                                            <td class="border border-gray-800 px-2 py-1">Title</td>
+                                            <td class="border border-gray-800 px-2 py-1">Description</td>
+                                            <td class="border border-gray-800 px-2 py-1">Status</td>
+                                            <td class="border border-gray-800 px-2 py-1">Priority</td>
+                                            <td class="border border-gray-800 px-2 py-1">Date of Creation</td>
+                                            <td class="px-2 py-1">Action</td>
+                                        </tr>
+                                        <% dept?.ticketsAssigned.map((ticket) => { %>
+                                            <tr class="border border-gray-800">
+                                                <td class="border border-gray-800 px-2 py-1"><%= ticket.title %></td>
+                                                <td class="border border-gray-800 px-2 py-1"><%= ticket.description %></td>
+                                                <td class="border border-gray-800 px-2 py-1"><%= ticket.status %></td>
+                                                <td class="border border-gray-800 px-2 py-1"><%= ticket.priority %></td>
+                                                <td class="border border-gray-800 px-2 py-1"><%= new Date(ticket.createdAt).toLocaleDateString() %></td>
+                                                <td class="border border-gray-800 px-2 py-1 underline text-blue-700">
+                                                    <a href="/department/ticket/<%= ticket._id %>">View</a>
+                                                </td>
+                                            </tr>
+                                        <% }) %>
+                                    </table>
+                                </div>
+                            </details>
+                            <details class="ml-4 my-2">
+                                <summary class="text-lg font-semibold">
+                                    Users
+                                    <span class="text-sm font-normal text-gray-600">
+                                        (<%= dept?.users.length %>)
+                                    </span>
+                                </summary>
+                                <div>
+                                    <table>
+                                        <tr class="font-semibold border border-gray-800">
+                                            <td class="border border-gray-800 px-2 py-1">Name</td>
+                                            <td class="border border-gray-800 px-2 py-1">Email</td>
+                                            <td class="border border-gray-800 px-2 py-1">Role</td>
+                                            <td class="border border-gray-800 px-2 py-1">Date of Creation</td>
+                                            <td class="px-2 py-1">Action</td>
+                                        </tr>
+                                        <% dept?.users.map((user) => { %>
+                                            <tr class="border border-gray-800">
+                                                <td class="border border-gray-800 px-2 py-1"><%= user.firstName + " " + user.lastName %></td>
+                                                <td class="border border-gray-800 px-2 py-1"><%= user.email %></td>
+                                                <td class="border border-gray-800 px-2 py-1"><%= user.role %></td>
+                                                <td class="border border-gray-800 px-2 py-1"><%= new Date(user.createdAt).toLocaleDateString() %></td>
+                                                <td class="border border-gray-800 px-2 py-1 underline text-blue-700">
+                                                    <p class="cursor-pointer" 
+                                                    onclick="deleteUser('<%= user._id %>')">Delete</a>
+                                                </td>
+                                            </tr>
+                                        <% }) %>
+                                    </table>
+                                </div>
+                            </details>
+                        </details>
+                        <div class="w-full h-1 bg-gray-600"></div>
+                    <% }) %>
+                <% } %>
+            </div>
+        </div>
+    </div>    
+
+    <script src="/js/leftPane.js"></script>
+    <script src="/js/profile.js"></script>
+    <script>
+        async function deleteUser(userId) {
+            if(confirm("Are you sure you want to delete this user?")) {
+                const response = await fetch(`/api/v1/auth/deleteUser`, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({userId}),
+                });
+                const result = await response.json();
+                console.log(result);
+                if(result.success) {
+                    alert("User deleted successfully");
+                    window.location.reload();
+                } else {
+                    alert("Error deleting user");
+                }
+            }
+        }  
+    </script>
+
+</body>
+</html>
